@@ -1,23 +1,36 @@
 module.exports = function check(str, bracketsConfig) {
-  let left = [];
-  let right = [];
-  let arr = [];
-  let brackets = bracketsConfig.toString().split(',');
-  for (let i=0; i<brackets.length; i++) {
-      if (i % 2 == 0) {
-          right.push(brackets[i]);
-      } else if (i % 2 != 0) {
-          left.push(brackets[i]);
-      } 
+  let map = new Map();
+  var arr = [];
+  var openBracket = [];
+  var closeBracket = [];
+  for (let i=0; i<bracketsConfig.length; i+=1) {
+    map.set(bracketsConfig[i][1],bracketsConfig[i][0]);
+    openBracket.push(bracketsConfig[i][0]);
+    closeBracket.push(bracketsConfig[i][1]);
   }
-  for (j=0; j<str.length; j++) {
-      if (right.includes(str[j])) {
-          arr.push(str[j]);
-      } else if (left.indexOf(str[j]) === right.indexOf(arr[arr.length-1])) {
-          arr.pop();
+  for(let s=0; s<str.length; s+=1) {
+    if (openBracket.indexOf(str[s]) !== -1 && closeBracket.indexOf(str[s]) !== -1) {
+      if (arr[arr.length-1] === str[s]) {
+        arr.pop();
       } else {
-         return false;
+        arr.push(str[s]);
       }
+    } else {
+      if (openBracket.indexOf(str[s]) !== -1) {
+        arr.push(str[s]);
+      } else {
+        var lastel = arr[arr.length-1];
+        if (map.get(str[s]) === lastel) {
+          arr.pop();
+        } else {
+          return false;
+        }
+        
+      }
+    }
   }
- return arr.length === 0;
+  if (arr.length === 0) {
+    return true;
+  }
+  return false;
 }
